@@ -1,0 +1,16 @@
+{
+  "name": "testamenta",
+  "version": "0.0.1",
+  "main": "testamenta.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch test/test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
+}
