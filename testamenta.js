@@ -43,7 +43,7 @@ export const describe = async (id, suite) => {
   await suite();
 
   log();
-  log(`  ${id} [${_suites.get(id).queue.length} tests]`);
+  log(`  ${id ?? '{unnamed suite}'} [${_suites.get(id).queue.length} tests]`);
 
   for (const { name, test } of _suites.get(id).queue) {
     try {
