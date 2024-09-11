@@ -57,10 +57,11 @@ export const describe = async (id, suite) => {
       await test(state);
       log(`   ✅ ${name || '{unnamed test}'}.`);
       _passed += 1;
-      _suites.get(id).afterEach?.(state);
     } catch (error) {
       _failed += 1;
       log(`   ❌ ${name}. ${error.message}.`);
+    } finally {
+      _suites.get(id).afterEach?.();
     }
   }
 
