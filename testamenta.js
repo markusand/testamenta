@@ -53,8 +53,8 @@ export const describe = async (id, suite) => {
 
   for (const { name, test } of _suites.get(id).queue) {
     try {
-      const state = _suites.get(id).beforeEach?.();
-      await test(state);
+      _suites.get(id).beforeEach?.();
+      await test();
       log(`   ✅ ${name || '{unnamed test}'}.`);
       _passed += 1;
     } catch (error) {
