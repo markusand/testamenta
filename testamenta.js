@@ -1,5 +1,9 @@
 let _passed = 0;
 let _failed = 0;
+const _skipped = {
+  suites: 0,
+  tests: 0,
+};
 
 const _suites = new Map();
 let _currentSuite = null;
@@ -26,6 +30,8 @@ export const tests = async (tests, options) => {
   log();
   log('Tests finished.');
   log();
+  if (_skipped.suites) log(`⚠️ ${_skipped.suites} suites skipped.`);
+  if (_skipped.tests) log(`⚠️ ${_skipped.tests} tests skipped.`);
   log(`✅ ${_passed} tests passed. ${!_failed ? '🎉' : ''}`);
   if (_failed) log(`❌ ${_failed} tests failed.`);
 };
@@ -34,7 +40,7 @@ export const beforeEach = fn => { _suites.get(_currentSuite).beforeEach = fn; };
 export const afterEach = fn => { _suites.get(_currentSuite).afterEach = fn; };
 
 export const it = (name, test) => { _suites.get(_currentSuite).queue.push({ name, test }); };
-it.skip = (name, test) => {};
+it.skip = () => { _skipped.tests += 1; };
 
 export const describe = async (id, suite) => {
   _suites.set(id, { queue: [], beforeEach: null, afterEach: null });
@@ -62,7 +68,7 @@ export const describe = async (id, suite) => {
   _suites.delete(id);
 };
 
-describe.skip = (id, suite) => {}; // Skip a test suite
+describe.skip = () => { _skipped.suites += 1; }; // Skip a test suite
 
 const log = (msg = '') => {
   if (typeof console !== 'undefined' && console.log) console.log(msg);

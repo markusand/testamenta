@@ -140,3 +140,10 @@ await describe('Hooks', () => {
     expect(mock()).toBe(1);
   });
 });
+
+await describe.skip('Skip suite', () => {});
+
+await describe('Skip tests', () => {
+  it.skip('Skip test', () => {});
+  it.skip('Skip test', () => {});
+});
