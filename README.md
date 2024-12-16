@@ -62,17 +62,17 @@ await describe('Promises', () => {
 });
 ```
 
-`beforeAll` and `afterAll` can be used to setup and clean up resources before and after each test in a suite. Returned value in beforeAll is passed as parameter to it and afterAll functions.
+`beforeEach` and `afterEach` can be used to setup and clean up resources before and after each test in a suite. Returned value in beforeEach is passed as parameter to all it functions.
 
 Mocking functions is supported, allowing you to simulate and track function calls during test execution.
 
 ```js
-import { describe, it, expect, beforeAll, mockFn } from 'https://unpkg.com/testamenta';
+import { describe, it, expect, beforeEach, mockFn } from 'https://unpkg.com/testamenta';
 
 await describe('Mocking', () => {
   const mock = mockFn();
 
-  beforeAll(() => mock.reset());
+  beforeEach(() => mock.reset());
 
   it('should mock a function', () => {
     mock(1, 2);
