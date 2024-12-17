@@ -10,7 +10,7 @@ Lightweight, dependency-free test framework with a **Jest-like public API**. Use
 
 - **⏳ Async-Aware**: Supports asynchronous test execution via `async/await`.
 
-- **🔍 Mocking**: Built-in support for mock functions and call tracking.
+- **🔍 Mocking and Spying**: Built-in support for mock and spy functions and call tracking.
 
 - **📝 Flexible Logging**: Outputs results to the console and the DOM.
 
@@ -62,12 +62,16 @@ await describe('Promises', () => {
 });
 ```
 
+`beforeAll` and `afterAll` can be used to setup and clean resource for the hole test suite (tests inside `describe`).
+
 `beforeEach` and `afterEach` can be used to setup and clean up resources before and after each test in a suite. Returned value in beforeEach is passed as parameter to all it functions.
 
-Mocking functions is supported, allowing you to simulate and track function calls during test execution.
+Mocking and spying functions is supported, allowing you to simulate and track function calls during test execution.
 
 ```js
-import { describe, it, expect, beforeEach, mockFn } from 'https://unpkg.com/testamenta';
+import { describe, it, expect, beforeEach, mockFn, spyOn } from 'https://unpkg.com/testamenta';
+
+const openWindow = spyOn(window, 'open');
 
 await describe('Mocking', () => {
   const mock = mockFn();
@@ -81,6 +85,8 @@ await describe('Mocking', () => {
     expect(mock)
       .toHaveBeenCalledTimes(2);
       .toHaveBeenCalledWith(1, 2);
+
+    expect(openWindow).toHaveBeenCalled();
   });
 })
 ```
