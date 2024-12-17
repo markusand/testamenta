@@ -180,7 +180,7 @@ export const spyOn = (object, methodName) => {
     error: null,
     calls: [],
 
-    get exectutions() {
+    get executions() {
       return this.calls.length;
     },
 
@@ -194,7 +194,6 @@ export const spyOn = (object, methodName) => {
     },
 
     clear() {
-      this.executions = 0;
       this.calls = [];
       this.error = null;
       return this;
@@ -222,7 +221,6 @@ export const spyOn = (object, methodName) => {
         ? error
         : new Error(String(error));
     } finally {
-      spy.executions += 1;
       spy.calls.push(args);
     }
   };
