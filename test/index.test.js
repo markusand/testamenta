@@ -72,6 +72,15 @@ await describe('Matchers', () => {
     expect({ hola: 'mon' }).not.toContain({ hello: 'world' });
   });
 
+  it('should check mock calls', () => {
+    const mock = mockFn();
+    mock(1, 2, 3);
+    expect(mock)
+      .toHaveBeenCalled()
+      .toHaveBeenCalledTimes(1)
+      .toHaveBeenCalledWith(1, 2, 3);
+  });
+
   it('should handle async tests', async () => {
     const value = await new Promise(resolve => {
       setTimeout(() => resolve(1), 1000);
