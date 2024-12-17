@@ -172,6 +172,8 @@ export const mockFn = implementation => {
 
 /* SPY ------------------------------------------------ */
 export const spyOn = (object, methodName) => {
+  if (typeof object[methodName] !== 'function') throw new TypeError(`The property ${methodName} is not a function.`);
+
   const original = object[methodName];
 
   let implementation = null;
