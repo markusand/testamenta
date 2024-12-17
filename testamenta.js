@@ -21,9 +21,9 @@ export const tests = async (tests, options) => {
     try {
       const src = `${path}${test}.test.js?${Date.now()}`;
       await import(src);
-    } catch (e) {
+    } catch (error) {
       log();
-      log(`Error loading test ${test}: ${e.message}`);
+      log(`Error loading test ${test}: ${error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -63,7 +63,7 @@ export const describe = async (title, suite) => {
       _passed += 1;
     } catch (error) {
       _failed += 1;
-      log(`   ❌ ${name}. ${error.message}.`);
+      log(`   ❌ ${name}. ${error instanceof Error ? error.message : error}.`);
     } finally {
       _suites.get(title).afterEach?.();
     }
