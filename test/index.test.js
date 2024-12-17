@@ -1,4 +1,4 @@
-import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, mockFn } from '../testamenta.js';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, mockFn, spyOn } from '../testamenta.js';
 
 expect.extend(({ toBeNumber }) => ({
   toBeDecimal: value => toBeNumber(value) && value % 1,
@@ -141,6 +141,39 @@ await describe('Hooks', () => {
 
   it('should reset mock after each test #2', () => {
     expect(mock()).toBe(1);
+  });
+});
+
+await describe('Spy', () => {
+  const match = spyOn(window, 'matchMedia').mock(() => 1);
+
+  afterEach(() => match.clear());
+  afterAll(() => match.restore());
+
+  it('should spy on a function', () => {
+    const result = window.matchMedia('value');
+    window.matchMedia();
+    expect(match)
+      .toHaveBeenCalled()
+      .toHaveBeenCalledTimes(2)
+      .toHaveBeenCalledWith('value');
+    expect(result).toBe(1);
+  });
+
+  it('should have cleared the spy after previous test', () => {
+    window.matchMedia();
+    expect(match).toHaveBeenCalledTimes(1);
+    expect(match).not.toHaveBeenCalledWith('value');
+  });
+
+  it('should reset the spy', () => {
+    match.reset();
+    const result = window.matchMedia('(prefers-color-scheme: dark)');
+    expect(match).toHaveBeenCalled(1);
+    console.log(result);
+    expect(result)
+      .toBeObject()
+      .toContain({ media: '(prefers-color-scheme: dark)' });
   });
 });
 

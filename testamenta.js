@@ -129,7 +129,7 @@ const matchers = {
     /* eslint-enable multiline-ternary */
   },
 
-  toHaveBeenCalled: value => matchers.toBeFunction(value) && 'calls' in value && value.calls.length > 0,
+  toHaveBeenCalled: value => 'calls' in value && value.calls.length > 0,
   toHaveBeenCalledTimes: (value, times) => matchers.toHaveBeenCalled(value) && value.calls.length === times,
   toHaveBeenCalledWith: (value, ...args) => matchers.toHaveBeenCalled(value) && value.calls.some(call => matchers.toBe(args, call)),
 };
@@ -168,4 +168,64 @@ export const mockFn = implementation => {
 
   mockFunction.reset();
   return mockFunction;
+};
+
+/* SPY ------------------------------------------------ */
+export const spyOn = (object, methodName) => {
+  const original = object[methodName];
+
+  let implementation = null;
+
+  const spy = {
+    error: null,
+    calls: [],
+
+    get exectutions() {
+      return this.calls.length;
+    },
+
+    get executed() {
+      return this.calls.length > 0;
+    },
+
+    mock(impl) {
+      implementation = impl;
+      return this;
+    },
+
+    clear() {
+      this.executions = 0;
+      this.calls = [];
+      this.error = null;
+      return this;
+    },
+
+    reset() {
+      this.clear();
+      implementation = null;
+      return this;
+    },
+
+    restore() {
+      object[methodName] = original;
+      return this;
+    },
+  };
+
+  object[methodName] = (...args) => {
+    try {
+      const executor = implementation ?? original;
+      console.log(executor);
+      return executor(...args);
+    } catch (error) {
+      spy.error = error instanceof Error
+        ? error
+        : new Error(String(error));
+    } finally {
+      spy.executions += 1;
+      spy.calls.push(args);
+    }
+  };
+
+  return spy;
 };
