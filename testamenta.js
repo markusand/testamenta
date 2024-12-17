@@ -36,6 +36,8 @@ export const tests = async (tests, options) => {
   if (_failed) log(`❌ ${_failed} tests failed.`);
 };
 
+export const beforeAll = fn => { _suites.get(_currentSuite).beforeAll = fn; };
+export const afterAll = fn => { _suites.get(_currentSuite).afterAll = fn; };
 export const beforeEach = fn => { _suites.get(_currentSuite).beforeEach = fn; };
 export const afterEach = fn => { _suites.get(_currentSuite).afterEach = fn; };
 
@@ -51,6 +53,8 @@ export const describe = async (id, suite) => {
   log();
   log(`  ${id ?? '{unnamed suite}'} [${_suites.get(id).queue.length} tests]`);
 
+  _suites.get(id).beforeAll?.();
+
   for (const { name, test } of _suites.get(id).queue) {
     try {
       const state = _suites.get(id).beforeEach?.();
@@ -64,6 +68,8 @@ export const describe = async (id, suite) => {
       _suites.get(id).afterEach?.();
     }
   }
+
+  _suites.get(id).afterAll?.();
 
   _currentSuite = null;
   _suites.delete(id);

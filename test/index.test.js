@@ -1,4 +1,4 @@
-import { describe, beforeEach, afterEach, it, expect, mockFn } from '../testamenta.js';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, mockFn } from '../testamenta.js';
 
 expect.extend(({ toBeNumber }) => ({
   toBeDecimal: value => toBeNumber(value) && value % 1,
@@ -116,6 +116,9 @@ await describe('Mocking', () => {
 
 await describe('Hooks', () => {
   const mock = mockFn(() => 1);
+
+  beforeAll(() => console.log('   ⏳ Running before all tests'));
+  afterAll(() => console.log('   ⌛️ Running after all tests'));
 
   beforeEach(() => {
     console.log('      · Running before each test');
