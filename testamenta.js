@@ -152,7 +152,7 @@ expect.extend = matchersBuilder => Object.assign(matchers, matchersBuilder(match
 
 /* MOCKING ---------------------------------------------- */
 
-export const mockFn = implementation => {
+export const mockFn = (implementation = undefined) => {
   const mockFunction = (...args) => {
     mockFunction.calls.push(args);
     return mockFunction.response ?? mockFunction.implementation?.();
