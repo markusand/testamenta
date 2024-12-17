@@ -77,7 +77,7 @@ export const describe = async (title, suite) => {
 
 describe.skip = () => { _skipped.suites += 1; }; // Skip a test suite
 
-const log = (msg = '') => {
+const log = (msg = ' ') => {
   if (typeof console !== 'undefined' && console.log) console.log(msg);
   if (typeof document !== 'undefined') {
     let logger = document.getElementById('logger');
