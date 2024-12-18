@@ -43,19 +43,21 @@ export const it = (name, test) => { _state.suites.get(_state.currentSuite).queue
 it.skip = () => { _state.skippedTests += 1; };
 
 export const describe = async (title, suite) => {
-  _state.suites.set(title, { queue: [], beforeEach: null, afterEach: null });
+  _state.suites.set(title, { queue: [] });
   _state.currentSuite = title;
 
   await suite();
 
+  const { queue = [], beforeAll, afterEach, beforeEach, afterAll } = _state.suites.get(title) ?? {};
+
   log();
-  log(`  ${title ?? '{unnamed suite}'} [${_state.suites.get(title).queue.length} tests]`);
+  log(`  ${title ?? '{unnamed suite}'} [${queue.length} tests]`);
 
-  _state.suites.get(title).beforeAll?.();
+  beforeAll?.();
 
-  for (const { name, test } of _state.suites.get(title).queue) {
+  for (const { name, test } of queue) {
     try {
-      const state = _state.suites.get(title).beforeEach?.();
+      const state = beforeEach?.();
       await test(state);
       log(`   ✅ ${name || '{unnamed test}'}.`);
       _state.passed += 1;
@@ -63,11 +65,11 @@ export const describe = async (title, suite) => {
       _state.failed += 1;
       log(`   ❌ ${name}. ${error instanceof Error ? error.message : error}.`);
     } finally {
-      _state.suites.get(title).afterEach?.();
+      afterEach?.();
     }
   }
 
-  _state.suites.get(title).afterAll?.();
+  afterAll?.();
 
   _state.currentSuite = null;
   _state.suites.delete(title);
