@@ -1,7 +1,7 @@
 import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, mockFn, spyOn } from '../testamenta.js';
 
 expect.extend(({ toBeNumber }) => ({
-  toBeDecimal: value => toBeNumber(value) && value % 1,
+  toBeDecimal: value => toBeNumber(value) && value % 1 !== 0,
 }));
 
 await describe('Matchers', () => {
@@ -161,7 +161,7 @@ await describe('Spy', () => {
 
   it('should spy on a function', () => {
     const result = window.matchMedia('value');
-    window.matchMedia();
+    window.matchMedia('');
     expect(match)
       .toHaveBeenCalled()
       .toHaveBeenCalledTimes(2)
@@ -170,7 +170,7 @@ await describe('Spy', () => {
   });
 
   it('should have cleared the spy after previous test', () => {
-    window.matchMedia();
+    window.matchMedia('');
     expect(match).toHaveBeenCalledTimes(1);
     expect(match).not.toHaveBeenCalledWith('value');
   });
@@ -178,7 +178,7 @@ await describe('Spy', () => {
   it('should reset the spy', () => {
     match.reset();
     const result = window.matchMedia('(prefers-color-scheme: dark)');
-    expect(match).toHaveBeenCalled(1);
+    expect(match).toHaveBeenCalledTimes(1);
     expect(result)
       .toBeObject()
       .toContain({ media: '(prefers-color-scheme: dark)' });
