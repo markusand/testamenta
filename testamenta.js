@@ -153,21 +153,21 @@ expect.extend = matchersBuilder => Object.assign(matchers, matchersBuilder(match
 /* MOCKING ---------------------------------------------- */
 
 export const mockFn = (implementation = undefined) => {
-  const mockFunction = (...args) => {
-    mockFunction.calls.push(args);
-    return mockFunction.response ?? mockFunction.implementation?.();
+  const mock = (...args) => {
+    mock.calls.push(args);
+    return mock.response ?? mock.implementation?.();
   };
 
-  mockFunction.returnValue = response => { mockFunction.response = response; };
+  mock.returnValue = response => { mock.response = response; };
 
-  mockFunction.reset = () => {
-    mockFunction.calls = [];
-    mockFunction.response = undefined;
-    mockFunction.implementation = implementation;
+  mock.reset = () => {
+    mock.calls = [];
+    mock.response = undefined;
+    mock.implementation = implementation;
   };
 
-  mockFunction.reset();
-  return mockFunction;
+  mock.reset(); // Initialize
+  return mock;
 };
 
 /* SPY ------------------------------------------------ */
