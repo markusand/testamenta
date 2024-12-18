@@ -168,12 +168,17 @@ export const MATCHERS = {
 };
 
 export const expect = result => {
-  const _throw = expectation => { throw new Error(`Expected ${MATCHERS.toBeFunction(result) ? result.name : JSON.stringify(result)} ${expectation}`); };
-
-  const build = (fns, negate = false) => {
+  const build = (matchers, negate = false) => {
     const decamelize = name => name.replace(/([A-Z])/g, ' $1').toLowerCase();
-    return Object.fromEntries(Object.entries(fns).map(([name, fn]) => {
-      const error = args => _throw(`${negate ? 'not ' : ''}${decamelize(name)} ${args.length ? JSON.stringify(args.length > 1 ? args : args[0]) : ''}`);
+
+    return Object.fromEntries(Object.entries(matchers).map(([name, fn]) => {
+      const error = args => {
+        const params = args.length ? JSON.stringify(args.length > 1 ? args : args[0]) : '';
+        const expectation = `${negate ? 'not ' : ''}${decamelize(name)} ${params}`;
+        const target = MATCHERS.toBeFunction(result) ? result.name : JSON.stringify(result);
+        throw new Error(`Expected ${target} ${expectation}`);
+      };
+
       return [name, (...args) => (negate ? !fn(result, ...args) : fn(result, ...args)) ? expect(result) : error(args)];
     }));
   };
