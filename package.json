@@ -1,16 +1,18 @@
 {
   "name": "testamenta",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "testamenta.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch test/test.js"
+    "dev": "node --watch test/test.js",
+    "build:types": "tsc --allowJs -d --emitDeclarationOnly testamenta.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "^17.1.0",
+    "typescript": "^5.7.2"
   }
 }
