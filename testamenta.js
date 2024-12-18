@@ -167,7 +167,7 @@ export const MATCHERS = {
   },
 };
 
-export const expect = result => {
+export const expect = value => {
   const build = (matchers, negate = false) => {
     const decamelize = name => name.replace(/([A-Z])/g, ' $1').toLowerCase();
 
@@ -175,11 +175,11 @@ export const expect = result => {
       const error = args => {
         const params = args.length ? JSON.stringify(args.length > 1 ? args : args[0]) : '';
         const expectation = `${negate ? 'not ' : ''}${decamelize(name)} ${params}`;
-        const target = MATCHERS.toBeFunction(result) ? result.name : JSON.stringify(result);
+        const target = MATCHERS.toBeFunction(value) ? value.name : JSON.stringify(value);
         throw new Error(`Expected ${target} ${expectation}`);
       };
 
-      return [name, (...args) => (negate ? !fn(result, ...args) : fn(result, ...args)) ? expect(result) : error(args)];
+      return [name, (...args) => (negate ? !fn(value, ...args) : fn(value, ...args)) ? expect(value) : error(args)];
     }));
   };
 
