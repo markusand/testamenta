@@ -1,18 +1,17 @@
-let _passed = 0;
-let _failed = 0;
-const _skipped = {
-  suites: 0,
-  tests: 0,
+const _state = {
+  passed: 0,
+  failed: 0,
+  skippedSuites: 0,
+  skippedTests: 0,
+  suites: new Map(),
+  currentSuite: null,
 };
-
-const _suites = new Map();
-let _currentSuite = null;
 
 /* MAIN SUITE ---------------------------------------- */
 
 export const tests = async (tests, options) => {
-  _passed = 0;
-  _failed = 0;
+  _state.passed = 0;
+  _state.failed = 0;
 
   log('Running tests...');
 
@@ -30,52 +29,51 @@ export const tests = async (tests, options) => {
   log();
   log('Tests finished.');
   log();
-  if (_skipped.suites) log(`⚠️ ${_skipped.suites} suites skipped.`);
-  if (_skipped.tests) log(`⚠️ ${_skipped.tests} tests skipped.`);
-  log(`✅ ${_passed} tests passed. ${!_failed ? '🎉' : ''}`);
-  if (_failed) log(`❌ ${_failed} tests failed.`);
+  if (_state.skippedSuites) log(`⚠️ ${_state.skippedSuites} suites skipped.`);
+  if (_state.skippedTests) log(`⚠️ ${_state.skippedTests} tests skipped.`);
+  log(`✅ ${_state.passed} tests passed. ${!_state.failed ? '🎉' : ''}`);
+  if (_state.failed) log(`❌ ${_state.failed} tests failed.`);
 };
 
-export const beforeAll = fn => { _suites.get(_currentSuite).beforeAll = fn; };
-export const afterAll = fn => { _suites.get(_currentSuite).afterAll = fn; };
-export const beforeEach = fn => { _suites.get(_currentSuite).beforeEach = fn; };
-export const afterEach = fn => { _suites.get(_currentSuite).afterEach = fn; };
-
-export const it = (name, test) => { _suites.get(_currentSuite).queue.push({ name, test }); };
-it.skip = () => { _skipped.tests += 1; };
+export const beforeAll = fn => { _state.suites.get(_state.currentSuite).beforeAll = fn; };
+export const afterAll = fn => { _state.suites.get(_state.currentSuite).afterAll = fn; };
+export const beforeEach = fn => { _state.suites.get(_state.currentSuite).beforeEach = fn; };
+export const afterEach = fn => { _state.suites.get(_state.currentSuite).afterEach = fn; };
+export const it = (name, test) => { _state.suites.get(_state.currentSuite).queue.push({ name, test }); };
+it.skip = () => { _state.skippedTests += 1; };
 
 export const describe = async (title, suite) => {
-  _suites.set(title, { queue: [], beforeEach: null, afterEach: null });
-  _currentSuite = title;
+  _state.suites.set(title, { queue: [], beforeEach: null, afterEach: null });
+  _state.currentSuite = title;
 
   await suite();
 
   log();
-  log(`  ${title ?? '{unnamed suite}'} [${_suites.get(title).queue.length} tests]`);
+  log(`  ${title ?? '{unnamed suite}'} [${_state.suites.get(title).queue.length} tests]`);
 
-  _suites.get(title).beforeAll?.();
+  _state.suites.get(title).beforeAll?.();
 
-  for (const { name, test } of _suites.get(title).queue) {
+  for (const { name, test } of _state.suites.get(title).queue) {
     try {
-      const state = _suites.get(title).beforeEach?.();
+      const state = _state.suites.get(title).beforeEach?.();
       await test(state);
       log(`   ✅ ${name || '{unnamed test}'}.`);
-      _passed += 1;
+      _state.passed += 1;
     } catch (error) {
-      _failed += 1;
+      _state.failed += 1;
       log(`   ❌ ${name}. ${error instanceof Error ? error.message : error}.`);
     } finally {
-      _suites.get(title).afterEach?.();
+      _state.suites.get(title).afterEach?.();
     }
   }
 
-  _suites.get(title).afterAll?.();
+  _state.suites.get(title).afterAll?.();
 
-  _currentSuite = null;
-  _suites.delete(title);
+  _state.currentSuite = null;
+  _state.suites.delete(title);
 };
 
-describe.skip = () => { _skipped.suites += 1; }; // Skip a test suite
+describe.skip = () => { _state.skippedSuites += 1; }; // Skip a test suite
 
 const log = (msg = ' ') => {
   if (typeof console !== 'undefined' && console.log) console.log(msg);
