@@ -112,7 +112,7 @@ const log = (msg = ' ') => {
 
 /* EXPECT & MATCHERS ------------------------------------ */
 
-const matchers = {
+export const MATCHERS = {
   toBeTruthy: value => !!value,
   toBeBoolean: value => typeof value === 'boolean',
   toBeNumber: value => typeof value === 'number',
@@ -122,10 +122,13 @@ const matchers = {
   toBeObject: value => typeof value === 'object' && value !== null,
   toBeFunction: value => typeof value === 'function',
 
-  toHaveLength: (value, length) => (matchers.toBeArray(value) || matchers.toBeString(value)) && value.length === length,
+  toHaveLength: (value, length) => {
+    const { toBeString, toBeArray } = MATCHERS;
+    return (toBeString(value) || toBeArray(value)) && value.length === length;
+  },
 
   toBe: (value, expected) => {
-    const { toBe, toBeArray, toBeDate, toBeObject, toHaveLength } = matchers;
+    const { toBe, toBeArray, toBeDate, toBeObject, toHaveLength } = MATCHERS;
     /* eslint-disable multiline-ternary */
     /* eslint-disable indent */
     return value === expected ? true
@@ -138,7 +141,7 @@ const matchers = {
   },
 
   toContain: (haystack, needle) => {
-    const { toBe, toBeArray, toBeObject, toBeString } = matchers;
+    const { toBe, toBeArray, toBeObject, toBeString } = MATCHERS;
     /* eslint-disable multiline-ternary */
     /* eslint-disable indent */
     return toBeArray(haystack) ? haystack.some(item => toBe(item, needle))
@@ -149,13 +152,23 @@ const matchers = {
     /* eslint-enable multiline-ternary */
   },
 
-  toHaveBeenCalled: value => 'calls' in value && value.calls.length > 0,
-  toHaveBeenCalledTimes: (value, times) => matchers.toHaveBeenCalled(value) && value.calls.length === times,
-  toHaveBeenCalledWith: (value, ...args) => matchers.toHaveBeenCalled(value) && value.calls.some(call => matchers.toBe(args, call)),
+  toHaveBeenCalled: value => {
+    const { toBeObject, toBeFunction, toBeArray } = MATCHERS;
+    return (toBeObject(value) || toBeFunction(value)) &&
+      'calls' in value && toBeArray(value.calls) &&
+      value.calls.length > 0;
+  },
+
+  toHaveBeenCalledTimes: (value, times) => MATCHERS.toHaveBeenCalled(value) && value.calls.length === times,
+
+  toHaveBeenCalledWith: (value, ...args) => {
+    const { toHaveBeenCalled, toBe } = MATCHERS;
+    return toHaveBeenCalled(value) && value.calls.some(call => toBe(args, call));
+  },
 };
 
 export const expect = result => {
-  const _throw = expectation => { throw new Error(`Expected ${matchers.toBeFunction(result) ? result.name : JSON.stringify(result)} ${expectation}`); };
+  const _throw = expectation => { throw new Error(`Expected ${MATCHERS.toBeFunction(result) ? result.name : JSON.stringify(result)} ${expectation}`); };
 
   const build = (fns, negate = false) => {
     const decamelize = name => name.replace(/([A-Z])/g, ' $1').toLowerCase();
@@ -165,10 +178,10 @@ export const expect = result => {
     }));
   };
 
-  return { ...build(matchers), not: build(matchers, true) };
+  return { ...build(MATCHERS), not: build(MATCHERS, true) };
 };
 
-expect.extend = matchersBuilder => Object.assign(matchers, matchersBuilder(matchers));
+expect.extend = matchersBuilder => Object.assign(MATCHERS, matchersBuilder(MATCHERS));
 
 /* MOCKING ---------------------------------------------- */
 
