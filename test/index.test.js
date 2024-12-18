@@ -179,7 +179,6 @@ await describe('Spy', () => {
     match.reset();
     const result = window.matchMedia('(prefers-color-scheme: dark)');
     expect(match).toHaveBeenCalled(1);
-    console.log(result);
     expect(result)
       .toBeObject()
       .toContain({ media: '(prefers-color-scheme: dark)' });

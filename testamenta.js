@@ -216,7 +216,6 @@ export const spyOn = (object, methodName) => {
   object[methodName] = (...args) => {
     try {
       const executor = implementation ?? original;
-      console.log(executor);
       return executor(...args);
     } catch (error) {
       spy.error = error instanceof Error
