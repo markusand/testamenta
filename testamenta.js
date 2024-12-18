@@ -40,8 +40,8 @@ export const afterAll = fn => { _state.suites.get(_state.currentSuite).afterAll 
 export const beforeEach = fn => { _state.suites.get(_state.currentSuite).beforeEach = fn; };
 export const afterEach = fn => { _state.suites.get(_state.currentSuite).afterEach = fn; };
 export const it = (name, test) => { _state.suites.get(_state.currentSuite).queue.push({ name, test }); };
-it.skip = () => { _state.skippedTests += 1; };
 
+it.skip = (_name, _test) => { _state.skippedTests += 1; };
 export const describe = async (title, suite) => {
   _state.suites.set(title, { queue: [] });
   _state.currentSuite = title;
@@ -75,7 +75,7 @@ export const describe = async (title, suite) => {
   _state.suites.delete(title);
 };
 
-describe.skip = () => { _state.skippedSuites += 1; }; // Skip a test suite
+describe.skip = (_title, _suite) => { _state.skippedSuites += 1; }; // Skip a test suite
 
 const log = (msg = ' ') => {
   if (typeof console !== 'undefined' && console.log) console.log(msg);
