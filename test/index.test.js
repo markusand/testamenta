@@ -112,6 +112,7 @@ await describe('Mocking', () => {
     const mock = mockFn(() => 1);
     expect(mock()).toBe(1);
 
+    mock.reset();
     mock.implementation = () => 2;
     expect(mock()).toBe(2);
 

@@ -340,14 +340,18 @@ export const mockFn = (implementation = undefined) => {
   // @ts-expect-error Function attributes are added with reset() after creation
   const mock = (...args) => {
     mock.calls.push(args);
-    return mock.response ?? mock.implementation?.();
+    mock.response = mock.implementation?.() ?? mock.response;
+    return mock.response;
   };
 
   /**
    * Sets the return value of the mock function.
    * @param {any} response - The return value to set.
    */
-  mock.returnValue = response => { mock.response = response; };
+  mock.returnValue = response => {
+    mock.implementation = undefined;
+    mock.response = response;
+  };
 
   /** * Resets the mock function's state, including clearing calls and responses. */
   mock.reset = () => {
