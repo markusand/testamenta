@@ -81,6 +81,36 @@ await describe('Matchers', () => {
       .toHaveBeenCalledWith(1, 2, 3);
   });
 
+  it('should check errors', () => {
+    const fn = () => {};
+    const throwFn = () => { throw new Error('Hello world!!'); };
+
+    expect(throwFn).toThrow();
+    expect(throwFn).toThrow('Hello world!!');
+    expect(throwFn).toThrow(new Error('Hello world!!'));
+    expect(throwFn).toThrow(/!+/);
+
+    expect(fn).not.toThrow();
+    expect(throwFn).not.toThrow(new Error('Hello world'));
+    expect(throwFn).not.toThrow(/a+/);
+    expect(throwFn).not.toThrow('Hello world!');
+
+    try {
+      expect(123).toThrow();
+      throw new Error('Test should fail if value in expect is not a function');
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== 'toThrow require a function as expect value') throw error;
+    }
+
+    try {
+      // @ts-expect-error Forcing an invalid 123 parameter
+      expect(throwFn).toThrow(123);
+      throw new Error('Test should fail if toThrow expected is not valid');
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== 'Invalid expected error type') throw error;
+    }
+  });
+
   it('should handle async tests', async () => {
     const value = await new Promise(resolve => {
       setTimeout(() => resolve(1), 1000);

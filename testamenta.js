@@ -215,6 +215,21 @@ export const MATCHERS = {
   /** @type {(value: unknown) => value is Function} - Checks if a value is a function. */
   toBeFunction: value => typeof value === 'function',
 
+  /** @type {(value: Function, expected?: string | RegExp | Error) => boolean} */
+  toThrow: (value, expected) => {
+    if (!MATCHERS.toBeFunction(value)) throw new TypeError('toThrow require a function as expect value');
+    try {
+      value();
+      return false; // No error thrown
+    } catch (error) {
+      if (expected === undefined) return true; // Any error is acceptable
+      if (typeof expected === 'string') return error.message === expected;
+      if (expected instanceof RegExp) return expected.test(error.message);
+      if (expected instanceof Error) return error.message === expected.message;
+      throw new TypeError('Invalid expected error type');
+    }
+  },
+
   /** @type {(value: unknown, length: number) => boolean} - Checks if a value has the specified length. */
   toHaveLength: (value, length) => {
     const { toBeString, toBeArray } = MATCHERS;

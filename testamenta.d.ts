@@ -22,6 +22,7 @@ export namespace MATCHERS {
     let toBeDate: (value: unknown) => value is Date;
     let toBeObject: (value: unknown) => value is any;
     let toBeFunction: (value: unknown) => value is Function;
+    let toThrow: (value: Function, expected?: string | RegExp | Error) => boolean;
     let toHaveLength: (value: unknown, length: number) => boolean;
     let toBe: (value: unknown, expected: unknown) => boolean;
     let toContain: (value: unknown, needle: unknown) => boolean;
