@@ -7,6 +7,7 @@ expect.extend(({ toBeNumber }) => ({
 await describe('Matchers', () => {
   it('should check types', () => {
     expect(1).toBeNumber();
+    // @ts-expect-error Cannot infer generated matchers with extend
     expect(1.3).toBeDecimal();
     expect('hello').toBeString();
     expect([1, 2, 3]).toBeArray();
@@ -15,6 +16,7 @@ await describe('Matchers', () => {
     expect(new Date(2000, 1, 1)).toBeDate();
 
     expect('1').not.toBeNumber();
+    // @ts-expect-error Cannot infer generated matchers with extend
     expect(1).not.toBeDecimal();
     expect(1).not.toBeString();
     expect('[1, 2, 3]').not.toBeArray();
@@ -170,6 +172,7 @@ await describe('Hooks', () => {
     mock.reset();
   });
 
+  // @ts-expect-error Cannot infer state type
   it('should receive state from beforeEach', state => {
     expect(state).toBe(10);
   });
